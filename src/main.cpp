@@ -11,7 +11,6 @@ int main() {
   while (true) {
     std::cout << "$ ";
     std::string command;
-    std::string input;
     std::getline(std::cin, command);
     std::cout << command << ": command not found" << std::endl; 
 
