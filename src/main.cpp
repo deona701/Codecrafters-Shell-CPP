@@ -4,6 +4,8 @@
 #include <sstream>   
 #include <cstdlib>   
 #include <unistd.h> 
+#include <sys/types.h>
+#include <sys/wait.h>
 
 using namespace std;
 
@@ -84,7 +86,27 @@ int main() {
             }
         } 
         else {
-            cout << command << ": command not found" << endl; 
+            string full_path = "/bin/ls";
+
+            pid_t pid = fork();
+
+            if (pid == 0) {
+              vector<char*> argv;
+
+              for (const string& arguement : args) {
+                argv.push_back(const_cast<char*>(arguement.c_str()))
+              }
+
+              argv.push_back(nullptr);
+              execv(full_path.c_str(), argv.data());
+
+              exit(1)
+            }
+
+            if (pid > 0) {
+              int status
+              waitpid(pid, &status, 0);
+            }
         }
     }
 
