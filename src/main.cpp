@@ -7,18 +7,16 @@ int main() {
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
 
-  bool shell_working = true;
 
-  while (shell_working) {
+  while (true) {
     std::cout << "$ ";
     std::string command;
     std::string input;
     std::getline(std::cin, command);
     std::cout << command << ": command not found" << std::endl; 
 
-    if (input == "exit") {
+    if (command == "exit") {
       break;
-      shell_working == false;
     }
   }
 
