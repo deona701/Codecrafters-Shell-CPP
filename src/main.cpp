@@ -19,15 +19,40 @@ int main() {
         string command;
         getline(cin, command);
 
-        if (command == "exit") {
+        vector<string> args;
+        stringstream ss(command);
+        string token;
+        while (ss >> token) {
+          args.push_back(token);
+          cout << "Number of arguemets passed: " << args.size() << endl;
+
+          if (args.empty()) {
+            continue;
+          }
+        }
+
+        if (args[0] == "exit") {
             break;
         }
        
-        else if (command.size() >= 5 && command.substr(0, 5) == "echo ") {
-            cout << command.substr(5) << endl;
+        else if (args[0] == "echo") {
+            for (size_t i = 1; i < args.size(); ++i) {
+              cout << args[i];
+
+              if (i < args.size() - 1) {
+                cout << " ";
+              }
+            }
+            cout << endl;
         }
-        else if (command.size() >= 5 && command.substr(0, 5) == "type ") {
-            string requested_command = command.substr(5);
+
+        else if (args[0] == "type") {
+          if (args.size() < 2) {
+            cout << "type: missing arguements" << endl;
+            continue;
+          }
+
+            string requested_command = args[1];
             bool found = false;
 
             for (string builtin : commands) {
@@ -40,11 +65,11 @@ int main() {
 
             if (found == false) {
                 string path = getenv("PATH");
-                stringstream ss(path);
+                stringstream path_ss(path);
                 string directory;
                 bool binary_found = false;
 
-                while (getline(ss, directory, ':')) {
+                while (getline(path_ss, directory, ':')) {
                     string full_path = directory + "/" + requested_command;
                     if (!access(full_path.c_str(), X_OK)) {
                         cout << requested_command << " is " << full_path << endl;
