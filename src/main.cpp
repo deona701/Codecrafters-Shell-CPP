@@ -10,7 +10,6 @@
 using namespace std;
 
 int main() {
-    // Flush after every std::cout / std::cerr
     cout << unitbuf;
     cerr << unitbuf;
 
@@ -25,11 +24,11 @@ int main() {
         stringstream ss(command);
         string token;
         while (ss >> token) {
-          args.push_back(token);
-
-          if (args.empty()) {
+            args.push_back(token);
+        }
+        
+        if (args.empty()) {
             continue;
-          }
         }
 
         if (args[0] == "exit") {
@@ -38,20 +37,20 @@ int main() {
        
         else if (args[0] == "echo") {
             for (size_t i = 1; i < args.size(); ++i) {
-              cout << args[i];
+                cout << args[i];
 
-              if (i < args.size() - 1) {
-                cout << " ";
-              }
+                if (i < args.size() - 1) {
+                    cout << " ";
+                }
             }
             cout << endl;
         }
 
         else if (args[0] == "type") {
-          if (args.size() < 2) {
-            cout << "type: missing arguements" << endl;
-            continue;
-          }
+            if (args.size() < 2) {
+                cout << "type: missing arguements" << endl;
+                continue;
+            }
 
             string requested_command = args[1];
             bool found = false;
@@ -79,33 +78,49 @@ int main() {
                     }
                 }
 
-                
                 if (!binary_found) {
                     cout << requested_command << ": not found" << endl;
                 }
             }
         } 
         else {
-            string full_path = "/bin/ls";
+            string base_cmd = args[0];
+            string path = getenv("PATH");
+            stringstream path_ss(path);
+            string directory;
+            bool binary_found = false;
+            string full_path = "";
 
-            pid_t pid = fork();
-
-            if (pid == 0) {
-              vector<char*> argv;
-
-              for (const string& arguement : args) {
-                argv.push_back(const_cast<char*>(arguement.c_str()))
-              }
-
-              argv.push_back(nullptr);
-              execv(full_path.c_str(), argv.data());
-
-              exit(1)
+            while (getline(path_ss, directory, ':')) {
+                string test_path = directory + "/" + base_cmd;
+                if (!access(test_path.c_str(), X_OK)) {
+                    binary_found = true;
+                    full_path = test_path;
+                    break;
+                }
             }
 
-            if (pid > 0) {
-              int status
-              waitpid(pid, &status, 0);
+            if (binary_found) {
+                pid_t pid = fork();
+
+                if (pid == 0) {
+                    vector<char*> argv;
+                    for (const string& arguement : args) {
+                        argv.push_back(const_cast<char*>(arguement.c_str()));
+                    }
+                    argv.push_back(nullptr);
+                    
+                    execv(full_path.c_str(), argv.data());
+                    exit(1);
+                }
+
+                if (pid > 0) {
+                    int status;
+                    waitpid(pid, &status, 0);
+                }
+            } 
+            else {
+                cout << base_cmd << ": not found" << endl;
             }
         }
     }
