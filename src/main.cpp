@@ -1,20 +1,25 @@
 #include <iostream>
 #include <string>
+#include <stdbool.h>
 
 int main() {
   // Flush after every std::cout / std:cerr
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
 
-  while (true) {
-    std::string input;
-    if (input == "exit") {
-      break;
-    }
+  bool shell_working = true;
+
+  while (shell_working) {
     std::cout << "$ ";
     std::string command;
+    std::string input;
     std::getline(std::cin, command);
     std::cout << command << ": command not found" << std::endl; 
+
+    if (input == "exit") {
+      break;
+      shell_working == false;
+    }
   }
 
 }
