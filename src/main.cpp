@@ -24,7 +24,6 @@ int main() {
         string token;
         while (ss >> token) {
           args.push_back(token);
-          cout << "Number of arguemets passed: " << args.size() << endl;
 
           if (args.empty()) {
             continue;
