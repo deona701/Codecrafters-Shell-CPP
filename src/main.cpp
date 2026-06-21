@@ -107,11 +107,23 @@ void handle_external_command(const vector<string>& args) {
     }
 }
 
+void handle_cd(const vector<string>& args) {
+    if (args.size() < 2) {
+        return;
+    }
+    
+    string target_dir = args[1];
+
+    if (chdir(target_dir.c_str()) != 0) {
+        cout << "cd: " << target_dir << ": No such file or directory" << endl;
+    } 
+}
+
 int main() {
     cout << unitbuf;
     cerr << unitbuf;
 
-    vector<string> commands = {"exit", "echo", "type", "pwd"};
+    vector<string> commands = {"exit", "echo", "type", "pwd", "cd"};
 
     while (true) {
         cout << "$ ";
@@ -141,6 +153,9 @@ int main() {
         else if (args[0] == "type") {
             handle_type(args, commands);
         } 
+        else if (args[0] == "cd") {
+            handle_cd(args);
+        }
         else {
             handle_external_command(args);
         }
