@@ -13,7 +13,7 @@ int main() {
     cout << unitbuf;
     cerr << unitbuf;
 
-    vector<string> commands = {"exit", "echo", "type"};
+    vector<string> commands = {"exit", "echo", "type", "pwd"};
 
     while (true) {
         cout << "$ ";
@@ -122,6 +122,13 @@ int main() {
             else {
                 cout << base_cmd << ": not found" << endl;
             }
+        }
+
+        else if (args[0] == "pwd") {
+          char cwd[1024];
+          if (getcwd(cwd, sizeof(cwd)) != nullptr) {
+            cout << cwd << endl;
+          }
         }
     }
 
