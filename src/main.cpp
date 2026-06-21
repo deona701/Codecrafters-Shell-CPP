@@ -114,6 +114,10 @@ void handle_cd(const vector<string>& args) {
     
     string target_dir = args[1];
 
+    if (target_dir == "~") {
+        target_dir = getenv("HOME");
+    }
+
     if (chdir(target_dir.c_str()) != 0) {
         cout << "cd: " << target_dir << ": No such file or directory" << endl;
     } 
