@@ -46,6 +46,13 @@ int main() {
             cout << endl;
         }
 
+        else if (args[0] == "pwd") {
+          char cwd[1024];
+          if (getcwd(cwd, sizeof(cwd)) != nullptr) {
+            cout << cwd << endl;
+          }
+        }
+
         else if (args[0] == "type") {
             if (args.size() < 2) {
                 cout << "type: missing arguements" << endl;
@@ -122,13 +129,7 @@ int main() {
             else {
                 cout << base_cmd << ": not found" << endl;
             }
-        }
-
-        else if (args[0] == "pwd") {
-          char cwd[1024];
-          if (getcwd(cwd, sizeof(cwd)) != nullptr) {
-            cout << cwd << endl;
-          }
+            
         }
     }
 
