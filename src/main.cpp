@@ -9,6 +9,16 @@
 
 using namespace std;
 
+//functions to clean up code
+void handle_pwd() {
+    char cwd[1024];
+    if (getcwd(cwd, sizeof(cwd)) != nullptr) {
+        cout << cwd << endl;
+    }
+}
+
+
+
 int main() {
     cout << unitbuf;
     cerr << unitbuf;
@@ -47,10 +57,7 @@ int main() {
         }
 
         else if (args[0] == "pwd") {
-          char cwd[1024];
-          if (getcwd(cwd, sizeof(cwd)) != nullptr) {
-            cout << cwd << endl;
-          }
+            handle_pwd();
         }
 
         else if (args[0] == "type") {
@@ -89,43 +96,44 @@ int main() {
                     cout << requested_command << ": not found" << endl;
                 }
             }
-        } 
-        else {
-            string base_cmd = args[0];
-            string path = getenv("PATH");
-            stringstream path_ss(path);
-            string directory;
-            bool binary_found = false;
-            string full_path = "";
-
-            while (getline(path_ss, directory, ':')) {
-                string test_path = directory + "/" + base_cmd;
-                if (!access(test_path.c_str(), X_OK)) {
-                    binary_found = true;
-                    full_path = test_path;
-                    break;
-                }
-            }
-
-            if (binary_found) {
-                pid_t pid = fork();
-
-                if (pid == 0) {
-                    vector<char*> argv;
-                    for (const string& arguement : args) {
-                        argv.push_back(const_cast<char*>(arguement.c_str()));
-                    }
-                    argv.push_back(nullptr);
-                    
-                    execv(full_path.c_str(), argv.data());
-                    exit(1);
-                }
-
-                if (pid > 0) {
-                    int status;
-                    waitpid(pid, &status, 0);
-                }
             } 
+            else {
+                string base_cmd = args[0];
+                string path = getenv("PATH");
+                stringstream path_ss(path);
+                string directory;
+                bool binary_found = false;
+                string full_path = "";
+
+                while (getline(path_ss, directory, ':')) {
+                    string test_path = directory + "/" + base_cmd;
+                    if (!access(test_path.c_str(), X_OK)) {
+                        binary_found = true;
+                        full_path = test_path;
+                        break;
+                    }
+                }
+
+                if (binary_found) {
+                    pid_t pid = fork();
+
+                    if (pid == 0) {
+                        vector<char*> argv;
+                        for (const string& arguement : args) {
+                            argv.push_back(const_cast<char*>(arguement.c_str()));
+                        }
+                        argv.push_back(nullptr);
+                        
+                        execv(full_path.c_str(), argv.data());
+                        exit(1);
+                    }
+
+                    if (pid > 0) {
+                        int status;
+                        waitpid(pid, &status, 0);
+                    }
+                } 
+                
             else {
                 cout << base_cmd << ": not found" << endl;
             }
